@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fail Digital Penyelaras - Viewer</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script>
+  async function loadMaterials() {
+      try {
+          let response = await fetch('materials.json');
+          let materialsData = await response.json();
+          renderMaterials(materialsData);
+      } catch (e) {
+          console.error("Gagal memuatkan materials.json", e);
+          document.getElementById("content").innerHTML =
+            "<p class='text-red-600'>❌ Gagal memuat data. Pastikan fail materials.json wujud.</p>";
+      }
+  }
+
+  function renderMaterials(materialsData) {
+      const categories = {
+          "surat": "📑 Surat",
+          "dasar": "📘 Dasar",
+          "panduan": "📖 Panduan",
+          "tahap1": "🟦 Modul Tahap 1",
+          "tahap2": "🟩 Modul Tahap 2",
+          "aktiviti": "🎯 Aktiviti"
+      };
+
+      let container = document.getElementById("content");
+      container.innerHTML = "";
+      for (let cat in categories) {
+          let section = document.createElement("div");
+          section.className = "mb-6 p-4 bg-white shadow rounded-lg";
+          section.innerHTML = `<h2 class='text-lg font-bold mb-3 text-gray-800'>${categories[cat]}</h2>`;
+
+          let ul = document.createElement("ul");
+          ul.className = "list-disc list-inside space-y-1";
+          if (materialsData[cat] && materialsData[cat].length > 0) {
+              materialsData[cat].forEach(item => {
+                  let li = document.createElement("li");
+                  li.innerHTML = `<a href='${item.link}' target='_blank' class='text-blue-600 hover:underline'>${item.name}</a>`;
+                  ul.appendChild(li);
+              });
+          } else {
+              ul.innerHTML = "<li class='text-gray-500 italic'>Tiada bahan</li>";
+          }
+          section.appendChild(ul);
+          container.appendChild(section);
+      }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadMaterials);
+  </script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <h1 class="text-2xl font-bold text-gray-900 mb-4">📂 Fail Digital Penyelaras (Viewer)</h1>
+    <div id="content" class="space-y-4">Memuatkan data...</div>
+  </div>
+</body>
+</html>
